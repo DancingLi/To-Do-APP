@@ -3,15 +3,10 @@
   "version": 2,
   "build": {
     "builder": "NIXPACKS",
-    "nixpacksConfig": {
-      "force": true,
-      "installers": {
-        "preInstall": "npm install --no-package-lock"
-      }
-    }
+    "buildCommand": "npm install && npm run build"
   },
   "deploy": {
-    "startCommand": "npm start",
+    "startCommand": "node server/server.js",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE"

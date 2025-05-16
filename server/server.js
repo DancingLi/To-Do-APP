@@ -23,6 +23,12 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+// Add more debugging info
+console.log('Environment Variables:');
+console.log('PORT:', process.env.PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PWD:', process.env.PWD); // This will show current directory on Railway
+
 // Add this special route for health checks
 app.get('/health', (req, res) => {
   res.status(200).send('OK');

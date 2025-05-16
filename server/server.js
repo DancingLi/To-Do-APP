@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const createError = require('http-errors');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 // Import routes
@@ -22,7 +23,14 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-// Log the current directory and the build path to help debug
+// Add this special route for health checks
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+  console.log('Health check passed!');
+});
+
+// Log when the server starts
+console.log('Starting server...');
 console.log('Current directory:', __dirname);
 console.log('Build path:', path.join(__dirname, '../build'));
 
@@ -36,7 +44,14 @@ app.use(express.static(path.join(__dirname, '../build')));
 
 // Send all other requests to the React app
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../build', 'index.html'));
+  // Check if the file exists before sending it
+  const indexPath = path.join(__dirname, '../build', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    console.log('Error: Could not find index.html file');
+    res.status(500).send('Sorry, something went wrong. The application files were not found.');
+  }
 });
 
 // 404 Error Handler
@@ -56,7 +71,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
 
 module.exports = app;

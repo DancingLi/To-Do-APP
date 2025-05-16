@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const createError = require('http-errors');
+const path = require('path');
 require('dotenv').config();
 
 // Import routes
@@ -10,7 +11,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const tagRoutes = require('./routes/tagRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -25,6 +26,14 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/tasks', taskRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/tags', tagRoutes);
+
+// Serve static files from the React build
+app.use(express.static(path.join(__dirname, '../build')));
+
+// Send all other requests to the React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
+});
 
 // 404 Error Handler
 app.use((req, res, next) => {
